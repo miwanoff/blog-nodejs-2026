@@ -16,6 +16,8 @@ app.use(
   express.static(__dirname + "/node_modules/bootstrap/dist/js"),
 );
 
+// Middleware для обробки даних з форм
+app.use(express.urlencoded({ extended: true }));
 
 // Роут головної сторінки
 app.get("/", function (req, res) {
@@ -26,12 +28,18 @@ app.get('/contact', function (req, res) {
   res.render('contact', { activePage: "contact" });
 });
 
-// Middleware для обробки даних з форм
-app.use(express.urlencoded({ extended: true }));
-
 app.post('/contact', function (req, res) {
   // Дані доступні у змінній req.body, передаємо їх у шаблон як formData
   res.render('contact_answer', { activePage: "contact", formData: req.body });
+});
+
+app.get('/new-post', function (req, res) {
+  res.render('new-post', { activePage: "posts" });
+});
+
+app.post('/new-post', function (req, res) {
+  // Дані доступні у змінній req.body, передаємо їх у шаблон як formData
+  res.render('new-post-success', { activePage: "posts", formData: req.body });
 });
 
 
