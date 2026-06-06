@@ -26,6 +26,14 @@ app.get('/contact', function (req, res) {
   res.render('contact', { activePage: "contact" });
 });
 
+// Middleware для обробки даних з форм
+app.use(express.urlencoded({ extended: true }));
+
+app.post('/contact', function (req, res) {
+  // Дані доступні у змінній req.body, передаємо їх у шаблон як formData
+  res.render('contact_answer', { activePage: "contact", formData: req.body });
+});
+
 
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
