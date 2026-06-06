@@ -22,6 +22,10 @@ app.get("/", function (req, res) {
   res.render("index", { activePage: "home" });
 });
 
+app.get('/contact', function (req, res) {
+  res.render('contact', { activePage: "contact" });
+});
+
 
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
