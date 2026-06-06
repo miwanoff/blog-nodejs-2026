@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <title>All Posts - My blog</title>
+</head>
+<body>
+  <div class="container mt-4">
+	<%- include("partials/navbar.ejs") %>  
+	<div class="d-flex justify-content-between align-items-center mb-4">
+  	<h2>All Blog Posts</h2>
+  	<a href="/new-post" class="btn btn-primary">Add New Post</a>
+	</div>
+	<% if (posts.length === 0) { %>
+  	<div class="alert alert-info" role="alert">
+    	No posts available. Be the first to create one!
+  	</div>
+	<% } else { %>
+  	<div class="row row-cols-1 row-cols-md-2 g-4">
+    	<% posts.forEach(function(post) { %>
+      	<div class="col">
+        	<div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h3 class="card-title h5"><%- post.title %></h3>
+                <span class="badge bg-secondary mb-3"><%- post.category %></span>
+                <p class="card-text" style="white-space: pre-line;"><%- post.body %></p>
+              </div>
+        	</div>
+      	</div>
+    	<% }); %>
+  	</div>
+	<% } %>
+  </div>
+  <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
