@@ -88,7 +88,7 @@ app.post('/contact', function (req, res) {
   res.render('contact_answer', { activePage: "contact", formData: req.body });
 });
 
-app.get('/new-post', function (req, res) {
+app.get('/new-post', requireAuth, function (req, res) {
   res.render('new-post', { activePage: "posts" });
 });
 
@@ -97,7 +97,7 @@ app.get('/new-post', function (req, res) {
 //   res.render('new-post-success', { activePage: "posts", formData: req.body });
 // });
 
-app.post('/new-post', function (req, res) {
+app.post('/new-post', requireAuth, function (req, res) {
   // Витягуємо дані з форми
   const { title, category, body } = req.body;
  
@@ -148,6 +148,36 @@ app.get('/posts', function (req, res) {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on http://localhost:3000");
+app.get('/login', (req, res) => {
+  res.render('login', { activePage: "login" });
+});
+
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+    // Якщо користувача не знайдено або пароль не збігається з хешем у БД
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.render('login', { activePage: "login", error: 'Невірний email або пароль' });
+    }
+    // Якщо все правильно — записуємо ID користувача в сесію
+    req.session.userId = user.id;
+    res.redirect('/posts'); // Перенаправляємо на сторінку постів
+  });
+});
+
+function requireAuth(req, res, next) {
+  // Якщо в сесії є userId, значить користувач авторизований — пропускаємо далі (next)
+  if (req.session.userId) {
+    next();
+  } else {
+    // Якщо ні — відправляємо на сторінку логіну
+    res.redirect('/login');
+  }
+}
+
+
+app.listen(3060, () => {
+  console.log("Server is running on http://localhost:3060");
 });
