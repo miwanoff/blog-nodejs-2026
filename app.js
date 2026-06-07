@@ -1,5 +1,14 @@
 const express = require("express");
 const app = express();
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
+
+// Налаштування сесій
+app.use(session({
+  secret: 'my_super_secret_key', // Секретний ключ для шифрування (в реальних проєктах ховається в .env)
+  resave: false,                 // Не зберігати сесію, якщо вона не змінилася
+  saveUninitialized: false       // Не створювати порожні сесії для неавторизованих користувачів
+}));
 
 
 // Підключення шаблонізатора EJS
@@ -14,13 +23,41 @@ const db = new sqlite3.Database('./blog.db', (err) => {
   console.log('Connected to the SQLite database.');
 });
 // Створення таблиці для постів
-db.run(`CREATE TABLE IF NOT EXISTS posts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  category TEXT NOT NULL,
-  body TEXT NOT NULL
-)`);
+// db.run(`CREATE TABLE IF NOT EXISTS posts (
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   title TEXT NOT NULL,
+//   category TEXT NOT NULL,
+//   body TEXT NOT NULL
+// )`);
 
+db.serialize(() => {
+  // Існуюча таблиця постів
+  db.run(`CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    body TEXT NOT NULL
+  )`);
+
+
+  // Нова таблиця користувачів
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+  )`);
+
+
+  // Створюємо адміна, якщо його ще немає
+  db.get('SELECT * FROM users WHERE email = ?', ['admin@blog.com'], (err, row) => {
+    if (!row) {
+      // Хешуємо пароль "123456" (генеруємо "сіль" з 10 раундів)
+      const hashedPassword = bcrypt.hashSync('123456', 10);
+      db.run('INSERT INTO users (email, password) VALUES (?, ?)', ['admin@blog.com', hashedPassword]);
+      console.log('Адміністратора створено: admin@blog.com / 123456');
+    }
+  });
+});
 
 
 
