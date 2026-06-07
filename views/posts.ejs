@@ -11,7 +11,9 @@
 	<%- include("partials/navbar.ejs") %>  
 	<div class="d-flex justify-content-between align-items-center mb-4">
   	<h2>All Blog Posts</h2>
+	<% if (isLoggedIn) { %> 
   	<a href="/new-post" class="btn btn-primary">Add New Post</a>
+	<% } %> 
 	</div>
 	<% if (posts.length === 0) { %>
   	<div class="alert alert-info" role="alert">

@@ -10,6 +10,12 @@ app.use(session({
   saveUninitialized: false       // Не створювати порожні сесії для неавторизованих користувачів
 }));
 
+app.use((req, res, next) => {
+  // Передаємо статус авторизації у всі шаблони під змінною isLoggedIn
+  res.locals.isLoggedIn = !!req.session.userId;
+  next();
+});
+
 
 // Підключення шаблонізатора EJS
 app.set("view engine", "ejs");
@@ -166,6 +172,12 @@ app.post('/login', (req, res) => {
     res.redirect('/posts'); // Перенаправляємо на сторінку постів
   });
 });
+
+app.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+});
+
 
 function requireAuth(req, res, next) {
   // Якщо в сесії є userId, значить користувач авторизований — пропускаємо далі (next)

@@ -13,6 +13,19 @@
       <li class="nav-item">
         <a class="nav-link <%- activePage === 'contact' ? 'active fw-bold' : '' %>" href="/contact">Contact</a>
       </li>
+      <li>
+        <ul class="navbar-nav ms-auto">
+          <% if (isLoggedIn) { %>
+           <li class="nav-item">
+            <a class="nav-link text-danger" href="/logout">Logout</a>
+           </li>
+           <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link text-primary" href="/login">Login</a>
+            </li>
+            <% } %>
+        </ul>
+    </li>
     </ul>
   </div>
 </nav>
